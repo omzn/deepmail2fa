@@ -1,7 +1,7 @@
-# 工繊Email用 二要素認証 スクリプト
-# Two factor authentication for KIT e-mail system
+# KIT Webmail用 二要素認証 スクリプト
+# Two factor authentication for KIT webmail
 
-工繊Emailの二要素認証を1コマンドで実行するPythonスクリプトです．
+Webmailの二要素認証を1コマンドで実行するPythonスクリプトです．
 外部メール認証を使いますので，DEEP Mail上でメール認証を有効にしておいてください．
 
 # インストール
@@ -15,7 +15,7 @@ Google Chromeをインストールしておく．
 
 config.ini.sampleをconfig.iniにコピーして記入する．
 
-[kit]セクションには，本学のemail関連の情報を記入する．
+[kit]セクションには，内部email関連の情報を記入する．
 [ext_email]セクションには，外部メールサービスの情報を記入する．
 (外部メールではapp passwordを発行するところが多いので，それを記入)
 login, passwordを生で書くので管理には気をつけて．
