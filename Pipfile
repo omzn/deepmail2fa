@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+selenium = "*"
+configparser = "*"
+webdriver-manager = "4.0.2"
+python-dateutil = "*"
+
+[dev-packages]
+
+[scripts]
+login="python autootp.py --headless"

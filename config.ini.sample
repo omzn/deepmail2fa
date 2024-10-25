@@ -1,0 +1,11 @@
+[kit]
+webmail_url= https://webmail.cis.kit.ac.jp
+email      = hoge@kit.ac.jp
+login      = hoge
+password   = piyo
+
+[ext_email]
+imapserver = Your external imap server
+imapport   = 993
+login      = Your external imap login
+password   = Your external imap password

@@ -1,0 +1,5 @@
+.vscode/settings.json
+__pycache__/myimap.cpython-39.pyc
+config.ini
+imaptest.py
+Pipfile.lock
