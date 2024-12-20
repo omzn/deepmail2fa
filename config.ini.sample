@@ -1,6 +1,6 @@
-[kit]
-webmail_url= https://webmail.cis.kit.ac.jp
-email      = hoge@kit.ac.jp
+[email]
+webmail_url= https://webmail.example.com
+email      = hoge@example.com
 login      = hoge
 password   = piyo
 

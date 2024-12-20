@@ -1,4 +1,4 @@
-"""Automatic OTP script for KIT"""
+"""Automatic OTP script for Deepmail"""
 import sys
 import time
 import os
@@ -13,22 +13,24 @@ from webdriver_manager.chrome import ChromeDriverManager
 from myimap import get_otp_key
 
 parser = argparse.ArgumentParser(
-    description='KIT Email 2 factor authentication')
+    description='Deepmail Email 2 factor authentication')
 parser.add_argument('-i', '--inifile', default="config.ini",
                     help='specify ini file')
 parser.add_argument("--headless", action='store_true',
                     help='do not show chrome window')
 parser.add_argument('-v', "--verbose", action='store_true',
                     help='verbose mode')
+parser.add_argument('-vv', "--moreverbose", action='store_true',
+                    help='strong verbose mode')
 
 args = parser.parse_args()
 config = ConfigParser()
 config.read(os.path.dirname(os.path.abspath(__file__))+'/' + args.inifile)
 
-conf_kit_email = config.get("kit", "email")
-kit_webmail_url = config.get("kit", "webmail_url")
-kit_login_id = config.get("kit", "login")
-kit_login_pass = config.get("kit", "password")
+conf_email = config.get("email", "email")
+webmail_url = config.get("email", "webmail_url")
+login_id = config.get("email", "login")
+login_pass = config.get("email", "password")
 exmail_imapserver = config.get("ext_email", "imapserver")
 exmail_login_id = config.get("ext_email", "login")
 exmail_login_pass = config.get("ext_email", "password")
@@ -52,9 +54,11 @@ def pinfo(message):
     if args.verbose:
         print("[Info] " + message)
 
-def perr(message):
+def perr(message,err):
     """エラー用表示関数"""
     print("[Error] " + message)
+    if args.moreverbose:
+        print(err)
 
 pinfo("Chromeを起動します．")
 # ChromeのWebDriverオブジェクトを作成する。
@@ -63,23 +67,21 @@ try:
     driver = webdriver.Chrome(service=chrome_service, options=options)
     wait = WebDriverWait(driver=driver, timeout=30)
 except Exception as e:
-    perr("Chromeが起動しません。")
-    print(e)
+    perr("Chromeが起動しません。",e)
     sys.exit()
 
 pinfo("WebMailにログインします．")
 # open web
 try:
-    driver.get(kit_webmail_url)  # 該当ページを開く → シボレスへ飛ぶ
+    driver.get(webmail_url)  # 該当ページを開く → シボレスへ飛ぶ
     wait.until(EC.presence_of_all_elements_located)
     driver.find_element(By.LINK_TEXT, "Webメールシステムへログイン").click()
     wait.until(EC.presence_of_all_elements_located)
-    driver.find_element(By.ID, "username").send_keys(kit_login_id)   # ユーザ名
-    driver.find_element(By.ID, "password").send_keys(kit_login_pass)  # パスワード
+    driver.find_element(By.ID, "username").send_keys(login_id)   # ユーザ名
+    driver.find_element(By.ID, "password").send_keys(login_pass)  # パスワード
     driver.find_element(By.NAME, "_eventId_proceed").click()    # 進む
 except Exception as e:
-    perr("シボレスログインできません。")
-    print(e)
+    perr("シボレスログインできません。",e)
     driver.quit()  # ブラウザーを終了する。
     sys.exit()
 
@@ -91,8 +93,7 @@ try:
     wait.until(EC.presence_of_all_elements_located)
     driver.find_element(By.ID, "BtnIssueAuthKey").click() # OTP発行
 except Exception as e:
-    perr("OTP発行できません。")
-    print(e)
+    perr("OTP発行できません。おそらく、既に多要素認証されています。",e)
     driver.quit()  # ブラウザーを終了する。
     sys.exit()
 
@@ -102,11 +103,11 @@ while otp_key == "" and count < 6:
     pinfo(f"メール取得試行{count + 1}回目…")
     time.sleep(5)
     otp_key = get_otp_key(exmail_imapserver,exmail_login_id,
-                            exmail_login_pass,conf_kit_email)
+                            exmail_login_pass,conf_email)
     count += 1
 
 if otp_key == "":
-    perr("EmailからOTPを取得できません。")
+    perr("EmailからOTPを取得できません。メールが届いていないと思われます。","")
     driver.quit()  # ブラウザーを終了する。
     sys.exit()
 
@@ -118,10 +119,9 @@ try:
     driver.find_element(By.ID, "login").click()   # ログイン
     wait.until(EC.presence_of_all_elements_located)
 except Exception as e:
-    perr("OTP入力できません。")
-    print(e)
+    perr("OTP入力できません。",e)
     driver.quit()  # ブラウザーを終了する。
     sys.exit()
 
 driver.quit()  # ブラウザーを終了する。
-pinfo("OTPを取得して入力しました。")
+print("OTPを取得して入力しました．")
