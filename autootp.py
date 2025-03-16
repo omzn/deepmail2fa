@@ -65,7 +65,7 @@ pinfo("Chromeを起動します．")
 try:
     chrome_service = fs.Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=chrome_service, options=options)
-    wait = WebDriverWait(driver=driver, timeout=30)
+    wait = WebDriverWait(driver=driver, timeout=10)
 except Exception as e:
     perr("Chromeが起動しません。",e)
     sys.exit()
@@ -88,9 +88,10 @@ except Exception as e:
 pinfo("OTP発行をリクエストします．")
 # deepmail
 try:
-    wait.until(EC.presence_of_all_elements_located)
+    wait.until(EC.presence_of_element_located((By.ID, "SelOutmail")))
     driver.find_element(By.ID, "SelOutmail").click()   # 外部メール認証
-    wait.until(EC.presence_of_all_elements_located)
+    time.sleep(1) # 1秒待った方が確実
+    wait.until(EC.presence_of_element_located((By.ID, "BtnIssueAuthKey")))
     driver.find_element(By.ID, "BtnIssueAuthKey").click() # OTP発行
 except Exception as e:
     perr("OTP発行できません。おそらく、既に多要素認証されています。",e)
